@@ -1,20 +1,10 @@
-from __future__ import annotations
 from pathlib import Path
-from typing import Callable, Optional, Union, TYPE_CHECKING
 
-import numpy as np
-import numpy.typing as npt
 import pandas as pd
 
 from torch.utils.data import Dataset
 
-from .common import load_patch, Patches
-
-if TYPE_CHECKING:
-    from .environmental_raster import PatchExtractor
-
-
-Targets = npt.NDArray[np.int64]
+from .common import load_patch
 
 
 class GeoLifeCLEF2022Dataset(Dataset):
@@ -42,15 +32,15 @@ class GeoLifeCLEF2022Dataset(Dataset):
 
     def __init__(
         self,
-        root: Union[str, Path],
-        subset: str,
+        root,
+        subset,
         *,
-        region: str = "both",
-        patch_data: str = "all",
-        use_rasters: bool = True,
-        patch_extractor: Optional[PatchExtractor] = None,
-        transform: Optional[Callable] = None,
-        target_transform: Optional[Callable] = None,
+        region="both",
+        patch_data="all",
+        use_rasters=True,
+        patch_extractor=None,
+        transform=None,
+        target_transform=None
     ):
         self.root = Path(root)
         self.subset = subset
@@ -120,7 +110,6 @@ class GeoLifeCLEF2022Dataset(Dataset):
         # self.one_hot_size = 34
         # self.one_hot = np.eye(self.one_hot_size)
 
-        self.patch_extractor = None
         if use_rasters:
             if patch_extractor is None:
                 from .environmental_raster import PatchExtractor
@@ -129,21 +118,18 @@ class GeoLifeCLEF2022Dataset(Dataset):
                 patch_extractor.add_all_rasters()
 
             self.patch_extractor = patch_extractor
+        else:
+            self.patch_extractor = None
 
-    def __len__(self) -> int:
+    def __len__(self):
         return len(self.observation_ids)
 
-    def __getitem__(
-        self,
-        index: int,
-    ) -> Union[
-        Union[Patches, list[Patches]], tuple[Union[Patches, list[Patches]], Targets]
-    ]:
+    def __getitem__(self, index):
         latitude = self.coordinates[index][0]
         longitude = self.coordinates[index][1]
         observation_id = self.observation_ids[index]
 
-        patches: Union[Patches, list[Patches]] = load_patch(
+        patches = load_patch(
             observation_id, self.root, data=self.patch_data
         )
 
@@ -157,7 +143,7 @@ class GeoLifeCLEF2022Dataset(Dataset):
         # Extracting patch from rasters
         if self.patch_extractor is not None:
             environmental_patches = self.patch_extractor[(latitude, longitude)]
-            patches = patches + [environmental_patches]
+            patches = patches + tuple(environmental_patches)
 
         # Concatenate all patches into a single tensor
         if len(patches) == 1:

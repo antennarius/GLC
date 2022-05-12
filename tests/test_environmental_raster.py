@@ -57,11 +57,7 @@ def test_patch_extractor_out_of_bounds(size):
     extractor = PatchExtractor(DATA_PATH / "rasters", size=size)
     extractor.append("bio_1", out_of_bounds="warn")
     with pytest.warns(UserWarning):
-        patch = extractor[0, 0]
-        if size == 1:
-            assert patch.shape == (1,)
-        else:
-            assert patch.shape == (1, size, size)
+        extractor[0, 0]
 
 
 def test_patch_plotting():

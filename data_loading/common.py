@@ -1,27 +1,23 @@
 from pathlib import Path
-from typing import Optional, Union
 
 import numpy as np
-import numpy.typing as npt
 from PIL import Image
 import tifffile
 
-Patches = npt.NDArray
-
 
 def load_patch(
-    observation_id: Union[int, str],
-    patches_path: Union[str, Path],
+    observation_id,
+    patches_path,
     *,
-    data: Union[str, list[str]] = "all",
-    landcover_mapping: Optional[npt.NDArray] = None,
-    return_arrays: bool = True
-) -> list[Patches]:
+    data="all",
+    landcover_mapping=None,
+    return_arrays=True
+):
     """Loads the patch data associated to an observation id
 
     Parameters
     ----------
-    observation_id : integer / string
+    observation_id : integer
         Identifier of the observation.
     patches_path : string / pathlib.Path
         Path to the folder containing all the patches.
@@ -34,8 +30,8 @@ def load_patch(
 
     Returns
     -------
-    patches : list of size 4 containing 2d array-like objects
-        Returns a list containing all the patches in the following order: RGB, Near-IR, altitude and landcover.
+    patches : tuple of size 4 containing 2d array-like objects
+        Returns a tuple containing all the patches in the following order: RGB, Near-IR, altitude and landcover.
     """
     observation_id = str(observation_id)
 

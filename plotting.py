@@ -1,37 +1,19 @@
-from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
-from collections.abc import Collection
-
 import numpy as np
-import numpy.typing as npt
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
-if TYPE_CHECKING:
-    import pandas as pd
 
-
-def plot_map(
-    *,
-    region: Optional[str] = None,
-    extent: Optional[npt.ArrayLike] = None,
-    ax: Optional[plt.Axes] = None,
-) -> plt.Axes:
+def plot_map(*, region=None, extent=None, ax=None):
     """Plots a map to show the observations on
 
     Parameters
     ----------
-    region: string, either "fr" or "us"
+    region : string, either "fr" or "us"
         Region to show, France or US.
-    extent: array-like of form [longitude min, longitude max, latitude min, latitude max]
+    extent : array-like of form [longitude min, longitude max, latitude min, latitude max]
         Explicit extent of the area to show, e.g., for zooming.
-    ax: plt.Axes
+    ax : plt.Axes
         Provide an Axes to use instead of creating one.
-
-    Returns
-    -------
-    plt.Axes:
-        Returns the used Axes.
     """
     if region == "fr":
         extent = [-5.5, 10, 41, 52]
@@ -68,12 +50,12 @@ def plot_map(
 
 
 def visualize_observation_patch(
-    patch: tuple[npt.NDArray, npt.NDArray, npt.NDArray, npt.NDArray],
+    patch,
     *,
-    observation_data: Optional[pd.Series] = None,
-    landcover_labels: Optional[Collection] = None,
-    return_fig: bool = False,
-) -> Optional[plt.Figure]:
+    observation_data=None,
+    landcover_labels=None,
+    return_fig=False,
+):
     """Plots patch data
 
     Parameters
@@ -82,7 +64,7 @@ def visualize_observation_patch(
         Patch data as returned by `load_patch`.
     observation_data : pandas Series
         Row of the dataframe containing the data of the observation.
-    landcover_labels : list
+    landcover_labels : list of strings
         Labels corresponding to the landcover codes.
     return_fig : boolean
         If True, returns the created plt.Figure object
@@ -194,5 +176,3 @@ def visualize_observation_patch(
 
     if return_fig:
         return fig
-    else:
-        return None
